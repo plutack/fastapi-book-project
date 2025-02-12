@@ -1,0 +1,20 @@
+# Git & environment files
+.git
+.gitignore
+.venv
+__pycache__
+
+# Python cache & test artifacts
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*.pytest_cache
+
+# OS & editor-specific files
+.DS_Store
+Thumbs.db
+
+# Docker itself
+Dockerfile
+.dockerignore
