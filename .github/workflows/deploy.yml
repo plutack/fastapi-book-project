@@ -25,7 +25,6 @@ jobs:
           cd /home/${{ secrets.EC2_USERNAME }}/fast-api-app || git clone https://github.com/plutack/fastapi-book-project.git fast-api-app
           cd /home/${{ secrets.EC2_USERNAME }}/fast-api-app
           git pull origin main
-          cd
 
 
           # Build and restart the application
