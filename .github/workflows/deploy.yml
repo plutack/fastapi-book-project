@@ -1,0 +1,39 @@
+name: Deploy on EC2
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build Docker image
+      run: |
+        docker build -t fast-api-app:latest .
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd /home/${{ secrets.EC2_USERNAME }}/fast-api-app || git clone https://github.com/plutack/fastapi-book-project.git fast-api-app
+          cd fast-api-app
+          git pull origin main
+
+          # Ensure SSL certificates exist
+          if [ ! -f "/etc/ssl/localhost.crt" ]; then
+            echo "Generating self-signed SSL certificate..."
+            sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+              -keyout /etc/ssl/localhost.key \
+              -out /etc/ssl/localhost.crt \
+              -subj "/CN=localhost"
+          fi
+
+          # Build and restart the application
+          docker-compose up --build -d
