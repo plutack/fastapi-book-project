@@ -11,10 +11,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Build Docker image
-      run: |
-        docker build --no-cache -t fast-api-app:latest .
-
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
       with:
@@ -26,7 +22,5 @@ jobs:
           cd /home/${{ secrets.EC2_USERNAME }}/fast-api-app
           git pull origin main
 
-
-          # Build and restart the application
-          docker-compose build --no-cache
-          docker-compose up --force-recreate
+          docker build --no-cache -t fast-api-app:latest .
+          docker-compose up -d --no-deps --force-recreate web 
