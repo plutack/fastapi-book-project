@@ -18,9 +18,13 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          cd /home/${{ secrets.EC2_USERNAME }}/fast-api-app || git clone https://github.com/plutack/fastapi-book-project.git fast-api-app
-          cd /home/${{ secrets.EC2_USERNAME }}/fast-api-app
+          cd /home/${{ secrets.EC2_USERNAME }} || exit 1
+          if [ ! -d "fast-api-app" ]; then
+            git clone https://github.com/plutack/fastapi-book-project.git fast-api-app
+          fi
+          cd fast-api-app
           git pull origin main
 
-          docker build --no-cache -t fast-api-app:latest .
-          docker-compose up -d --no-deps --force-recreate web 
+          docker-compose down
+          docker-compose build --no-cache
+          docker-compose up -d
